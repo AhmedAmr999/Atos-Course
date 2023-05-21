@@ -3,16 +3,12 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const usersRoutes = require("./routes/usersRoutes");
 const HttpError = require("./models/http-error");
-const questionsRoutes = require("./routes/questionsRoutes");
 const cors = require("cors");
 
 const app = express();
 app.use(bodyParser.json());
 app.use("/users", cors());
 app.use("/users", usersRoutes);
-app.use("/questions", cors());
-app.use("/questions", questionsRoutes);
-
 
 
 app.use((req, res, next) => {
@@ -38,7 +34,7 @@ app.use((error, req, res, next) => {
   res.json({ message: error.message || "An unknown error occurred!" });
 });
 
-app.listen(3000, () => {
+app.listen(3001, () => {
   console.log("Server Started on port 3001 ");
 });
 
