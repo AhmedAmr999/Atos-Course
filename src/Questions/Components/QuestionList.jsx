@@ -2,17 +2,15 @@ import React from "react";
 import Card from "../../Shared/Components/Card";
 import QuestionItem from "./QuestionItem";
 import { NavLink } from "react-router-dom/cjs/react-router-dom.min";
-
+import "./QuestionItem.css";
 const QuestionList = (props) => {
-  console.log(props.answers);
-
   if (props.questions.length === 0) {
     return (
       <div>
-        <Card>
+        <Card className="center-warning">
           <h2>No Questions Found!!</h2>
           {localStorage.getItem("userType") === "TEACHER" && (
-            <NavLink to="/questions/addQuestions">Add Question</NavLink>
+            <NavLink to="/questions/addQuestion">Add Question</NavLink>
           )}
         </Card>
       </div>

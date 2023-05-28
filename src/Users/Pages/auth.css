@@ -10,6 +10,17 @@
     text-align: center;
 }
 
+.addQuestionForm {
+    width: 90%;
+    max-width: 50rem;
+    margin: 7rem auto;
+    text-align: center;
+}
+
+.addQuestionForm form {
+    margin-bottom: 1rem;
+}
+
 .authentication form {
     margin-bottom: 1rem;
 }
@@ -21,6 +32,19 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
+}
+
+.remove-button {
+    background-color: red;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.remove-button:hover {
+    background-color: #0056b3;
 }
 
 .login-button:hover {
