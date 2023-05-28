@@ -1,17 +1,29 @@
-const HttpError = require("../models/http-error");
 const expressValidator = require("express-validator");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
-const User = require("../models/usersModels");
+const User = require("../Models/userModel");
 const jwt = require("jsonwebtoken");
+const HTTPError = require("../models/http-error");
+
+const getUsers = async (req, res, next) => {
+  let users;
+  try {
+    users = await User.find({}, "-password");
+  } catch (error) {
+    return next(
+      new HTTPError("fetching users failed please try again later ", 500)
+    );
+  }
+
+  res.json({ users: users.map((user) => user.toObject({ getters: true })) });
+};
 
 const signup = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     console.log(errors);
     return next(
-      new HttpError("Invalid Inputs passed,please check your data"),
-      422
+      new HTTPError("Invalid inputs passed,please check your data..", 422)
     );
   }
   const { username, password, userType } = req.body;
@@ -19,11 +31,11 @@ const signup = async (req, res, next) => {
   try {
     existingUser = await User.findOne({ username: username });
   } catch (error) {
-    return next(new HttpError("SignUp Failed Please Try Again", 500));
+    return next(new HTTPError("SignUp Failed Please Try Again", 500));
   }
 
   if (existingUser) {
-    return next(new HttpError("User Already Exists,Please Login Instead", 422));
+    return next(new HTTPError("User Already Exists,Please Login Instead", 422));
   }
 
   let hashedPassword;
@@ -31,7 +43,7 @@ const signup = async (req, res, next) => {
     hashedPassword = await bcrypt.hash(password, 12);
   } catch (error) {
     console.log(error);
-    return next(new HttpError("Could Not Create User,Please Try Again", 500));
+    return next(new HTTPError("Could Not Create User,Please Try Again", 500));
   }
 
   const newUser = new User({
@@ -43,7 +55,7 @@ const signup = async (req, res, next) => {
   try {
     await newUser.save();
   } catch (error) {
-    return next(new HttpError("SignUp Failed,please Try Again", 500));
+    return next(new HTTPError("SignUp Failed,please Try Again", 500));
   }
 
   let token;
@@ -59,7 +71,7 @@ const signup = async (req, res, next) => {
       { expiresIn: "1h" }
     );
   } catch (error) {
-    return next(new HttpError("SignUp Failed,please Try Again", 500));
+    return next(new HTTPError("SignUp Failed,please Try Again", 500));
   }
 
   res.status(201).json({ message: "success", userType, token });
@@ -72,10 +84,10 @@ const login = async (req, res, next) => {
   try {
     existingUser = await User.findOne({ username: username });
   } catch (error) {
-    return next(new HttpError("Login Failed Please Try Again", 500));
+    return next(new HTTPError("Login Failed Please Try Again", 500));
   }
   if (!existingUser) {
-    return next(new HttpError("Invalid Credentials, Please Try Again", 401));
+    return next(new HTTPError("Invalid Credentials, Please Try Again", 401));
   }
 
   let isValidPassword = false;
@@ -83,7 +95,7 @@ const login = async (req, res, next) => {
     isValidPassword = await bcrypt.compare(password, existingUser.password);
   } catch (error) {
     return next(
-      new HttpError(
+      new HTTPError(
         "Login Failed Please check your credentials and Try Again",
         500
       )
@@ -91,7 +103,7 @@ const login = async (req, res, next) => {
   }
 
   if (!isValidPassword) {
-    return next(new HttpError("Invalid credentials and Try Again", 401));
+    return next(new HTTPError("Invalid credentials and Try Again", 401));
   }
 
   let token;
@@ -106,7 +118,7 @@ const login = async (req, res, next) => {
       { expiresIn: "1h" }
     );
   } catch (error) {
-    return next(new HttpError("Login Failed,please Try Again", 500));
+    return next(new HTTPError("Login Failed,please Try Again", 500));
   }
 
   res
@@ -141,6 +153,7 @@ const getUserById = async (req, res, next) => {
   });
 };
 
+exports.getUsers = getUsers;
 exports.signup = signup;
 exports.login = login;
 exports.getUserById = getUserById;
