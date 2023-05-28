@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const questionsSchema = new Schema(
   {
-    questionName: { type: String, required: true },
+    questionName: { type: String, required: true, unique: true },
     category: { type: String, required: true },
     subcategory: { type: String, required: true },
     mark: { type: Number, required: true },
@@ -21,11 +21,6 @@ const questionsSchema = new Schema(
   }
 );
 
-const db1 = mongoose.createConnection(
-  "mongodb+srv://ahmedmaso:ahmed1234@questionscluster.zooyb59.mongodb.net/questions?retryWrites=true&w=majority",
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }
-);
-module.exports = db1.model("Question", questionsSchema);
+questionsSchema.plugin(uniqueValidator);
+
+module.exports = mongoose.model("Question", questionsSchema);

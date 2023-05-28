@@ -8,11 +8,5 @@ const answersSchema = new Schema({
   question: { type: mongoose.Types.ObjectId, required: true, ref: "Question" },
 });
 
-const db1 = mongoose.createConnection(
-  "mongodb+srv://ahmedmaso:ahmed1234@questionscluster.zooyb59.mongodb.net/questions?retryWrites=true&w=majority",
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }
-);
-module.exports = db1.model("Answer", answersSchema);
+
+module.exports = mongoose.model("Answer", answersSchema);
