@@ -1,5 +1,7 @@
 const API_ENDPOINT = "http://localhost:3002/users";
 
+const GET_ALL_USERS_API = "http://localhost:8000/api/users";
+
 export async function login(username, password) {
   const response = await fetch(`${API_ENDPOINT}/login`, {
     method: "POST",
@@ -41,7 +43,7 @@ export async function signup(username, password, userType) {
 
 export const fetchUserInfo = async () => {
   try {
-    const response = await fetch("http://localhost:3002/users/profileInfo", {
+    const response = await fetch(`${API_ENDPOINT}/profileInfo`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -59,7 +61,23 @@ export const fetchUserInfo = async () => {
 
 export async function getAllUsers() {
   try {
-    const response = await fetch("http://localhost:3002/users", {
+    const response = await fetch(`${API_ENDPOINT}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function newGetAllUsers() {
+  try {
+    const response = await fetch(`${GET_ALL_USERS_API}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

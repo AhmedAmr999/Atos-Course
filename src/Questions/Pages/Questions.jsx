@@ -95,24 +95,6 @@ const Questions = () => {
   return (
     <div>
       <React.Fragment>
-        {loadedQuestions.length !== 0 &&
-          localStorage.getItem("userType") !== "STUDENT" && (
-            <ComboBox
-              options={allCategories}
-              selectedOption={selectedOption}
-              onChange={handleSelectChange}
-              comboBoxName="Select a category"
-            />
-          )}
-        {loadedQuestions.length !== 0 &&
-          localStorage.getItem("userType") !== "STUDENT" && (
-            <ComboBox
-              options={filteredUsers}
-              selectedOption={selectedUsersOption}
-              onChange={handleUserChange}
-              comboBoxName="Select a teacher"
-            />
-          )}
         <QuestionList questions={currentQuestions} />
         {loadedQuestions.length !== 0 && (
           <ReactPaginate
@@ -124,6 +106,22 @@ const Questions = () => {
             activeClassName="active"
             previousLabel="Previous"
             nextLabel="Next"
+          />
+        )}
+        {loadedQuestions.length !== 0 && (
+          <ComboBox
+            options={allCategories}
+            selectedOption={selectedOption}
+            onChange={handleSelectChange}
+            comboBoxName="Select a category"
+          />
+        )}
+        {loadedQuestions.length !== 0 && (
+          <ComboBox
+            options={filteredUsers}
+            selectedOption={selectedUsersOption}
+            onChange={handleUserChange}
+            comboBoxName="Select a teacher"
           />
         )}
       </React.Fragment>

@@ -38,7 +38,7 @@ const QuestionItem = (props) => {
   };
 
   return (
-    <div className="custom-div">
+    <div>
       <li className="question-item">
         <Card className="question-item__content ">
           <div className="top-right">

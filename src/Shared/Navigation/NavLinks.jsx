@@ -1,71 +1,62 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import "./NavLinks.css";
+import useAuth from "../hooks/useAuth";
 
-const NavLinks = (props) => {
+const NavLinks = ({ User_Type, logout }) => {
+  //const [, , , , , logout] = useAuth();
+
   const handleLogout = () => {
-    localStorage.removeItem("userType");
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("expirationDate");
-    window.location.href = "/auth";
+    logout();
   };
+
   return (
-    <ul className="nav-links">
-      {localStorage.getItem("token") === null ? (
+    <nav>
+      <ul className="nav-links">
         <li>
-          <NavLink to="/auth">AUTH</NavLink>
+          <NavLink to="/users/userProfile">PROFILE PAGE</NavLink>
         </li>
-      ) : null}
 
-      {localStorage.getItem("token") !== null && (
-        <li>
-          <NavLink to="/" onClick={handleLogout}>
-            LOGOUT
-          </NavLink>
-        </li>
-      )}
-
-      {localStorage.getItem("token") !== null && (
-        <li>
-          <NavLink to="/questions">Questions</NavLink>
-        </li>
-      )}
-
-      {localStorage.getItem("userType") === "STUDENT" &&
-        localStorage.getItem("token") !== null && (
+        {User_Type === "TEACHER" && (
           <li>
-            <NavLink to="/questions/student">Student Questions</NavLink>
+            <NavLink to="/exams/assignExam">ASSIGN EXAM PAGE</NavLink>
           </li>
         )}
 
-      {localStorage.getItem("token") !== null && (
-        <li>
-          <NavLink to="/users/userInfo">PROFILE PAGE</NavLink>
-        </li>
-      )}
+        {User_Type === "TEACHER" && localStorage.getItem("token") && (
+          <li>
+            <NavLink to="/exams/addExam">ADD EXAM PAGE</NavLink>
+          </li>
+        )}
 
-      {localStorage.getItem("userType") === "TEACHER" &&
-        localStorage.getItem("token") !== null && (
+        {User_Type === "SUPER_ADMIN" && (
+          <li>
+            <NavLink to="/users/addAdmin">ADD ADMIN PAGE</NavLink>
+          </li>
+        )}
+        {User_Type === "TEACHER" && localStorage.getItem("token") !== null && (
           <li>
             <NavLink to="/questions/addQuestion">ADD QUESTION PAGE</NavLink>
           </li>
         )}
 
-      {localStorage.getItem("userType") === "TEACHER" &&
-        localStorage.getItem("token") !== null && (
+        {User_Type === "STUDENT" && localStorage.getItem("token") !== null && (
           <li>
-            <NavLink to="/exams/examEngine/addExam">ADD EXAM PAGE</NavLink>
+            <NavLink to={`/exams/student/:examdefinition_id/:examInsatnceId`}>
+              Student Questions
+            </NavLink>
           </li>
         )}
 
-      {localStorage.getItem("token") !== null &&
-        localStorage.getItem("userType") === "SUPER_ADMIN" && (
+        {localStorage.getItem("token") !== null && (
           <li>
-            <NavLink to="/users/addAdmin">ADD ADMIN PAGE</NavLink>
+            <NavLink to="/" onClick={handleLogout}>
+              LOGOUT
+            </NavLink>
           </li>
         )}
-    </ul>
+      </ul>
+    </nav>
   );
 };
 

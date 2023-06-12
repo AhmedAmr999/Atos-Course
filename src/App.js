@@ -1,116 +1,55 @@
-import React, { useEffect, useState, useCallback } from "react";
-import Auth from "./Users/Pages/Auth";
+import React from "react";
 import UserInfo from "./Users/Pages/UserInfo";
 import MainNavigation from "./Shared/Navigation/MainNavigation";
 import Questions from "./Questions/Pages/Questions";
 
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  Redirect,
-} from "react-router-dom";
-import LoadingSpinner from "./Shared/Components/LoadingSpinner";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import AddQuestion from "./Questions/Pages/AddQuestion";
 import EditQuestion from "./Questions/Pages/EditQuestion";
-
+import AddExamPage from "./Exams/Pages/AddExamPage";
+import StudentExam from "./Exams/Pages/StudentExam";
+import AddExamInstance from "./Exams/Pages/AddExamInstance";
+import useAuth from "./Shared/hooks/useAuth";
+import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-    const expirationDate = new Date().getTime() + 3600 * 1000;
-    localStorage.setItem("expirationDate", expirationDate.toString());
-  };
-
-  const handleLogout = useCallback(() => {
-    setIsLoggedIn(false);
-    localStorage.removeItem("userType");
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("expirationDate");
-    alert("Session Time Ended");
-  }, []);
-
-  useEffect(() => {
-    const checkAuthentication = () => {
-      const token = localStorage.getItem("token");
-      const expirationDate = localStorage.getItem("expirationDate");
-      if (token && expirationDate) {
-        const now = new Date();
-        if (now.getTime() > +expirationDate) {
-          handleLogout();
-        } else {
-          setIsLoggedIn(true);
-          const remainingTime = +expirationDate - now.getTime();
-          setTimeout(() => {
-            handleLogout();
-          }, remainingTime);
-        }
-      }
-      setLoading(false);
-    };
-
-    checkAuthentication();
-  }, [handleLogout, localStorage.getItem("expirationDate")]);
-
-  if (loading) {
-    return <LoadingSpinner />;
-  }
+  const [islogin, token, User_Type, username, userId, logout] = useAuth();
+  localStorage.setItem("token", token);
+  localStorage.setItem("userId", userId);
 
   return (
-    <Router>
-      <MainNavigation onLogout={handleLogout} />
-      <Switch>
-        <Route path="/users/addAdmin" exact>
-          {isLoggedIn && localStorage.getItem("userType") === "SUPER_ADMIN" ? (
-            <Auth onLogin={handleLogin} isSuperAdmin={true} />
-          ) : (
-            <Redirect to="/auth" />
-          )}
-        </Route>
+    islogin && (
+      <Router>
+        <MainNavigation User_Type={User_Type} logout={logout} />
+        <Switch>
+          <Route path="/users/userProfile">
+            {islogin && <UserInfo username={username} User_Type={User_Type} />}
+          </Route>
+          <Route path="/:qid/editQuestion" exact>
+            {islogin && User_Type === "TEACHER" && <EditQuestion />}
+          </Route>
 
-        <Route path="/:qid/editQuestion" exact>
-          {isLoggedIn && localStorage.getItem("userType") === "TEACHER" && (
-            <EditQuestion />
-          )}
-        </Route>
+          <Route path="/exams/addExam" exact>
+            {islogin && User_Type === "TEACHER" && <AddExamPage />}
+          </Route>
 
-        <Route path="/questions" exact>
-          {isLoggedIn && localStorage.getItem("userType") !== "STUDENT" && (
-            <Questions />
-          )}
-        </Route>
+          <Route path="/exams/assignExam" exact>
+            {islogin && User_Type === "TEACHER" && <AddExamInstance />}
+          </Route>
 
-        <Route path="/questions/addQuestion" exact>
-          {isLoggedIn && localStorage.getItem("userType") === "TEACHER" && (
-            <AddQuestion />
-          )}
-        </Route>
-        <Route path="/auth">
-          {!isLoggedIn ? (
-            <Auth onLogin={handleLogin} isSuperAdmin={false} />
-          ) : (
-            <Redirect
-              to={
-                localStorage.getItem("userType") === "SUPER_ADMIN"
-                  ? "/users/addAdmin"
-                  : "/users/userInfo"
-              }
-            />
-          )}
-        </Route>
-        <Route path="/users/userInfo">
-          {isLoggedIn ? (
-            <UserInfo onLogout={handleLogout} />
-          ) : (
-            <Redirect to="/auth" />
-          )}
-        </Route>
-        <Redirect to="/auth" />
-      </Switch>
-    </Router>
+          <Route path="/exams/student/:examdefinition_id/:examInsatnceId" exact>
+            {islogin && User_Type === "STUDENT" && <StudentExam />}
+          </Route>
+
+          <Route path="/questions" exact>
+            {islogin && User_Type !== "STUDENT" && <Questions />}
+          </Route>
+
+          <Route path="/questions/addQuestion" exact>
+            {islogin && User_Type === "TEACHER" && <AddQuestion />}
+          </Route>
+        </Switch>
+      </Router>
+    )
   );
 }
 

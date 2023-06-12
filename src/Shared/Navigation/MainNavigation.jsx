@@ -5,7 +5,7 @@ import NavLinks from "./NavLinks";
 import "./MainNavigation.css";
 import SideDrawer from "./SideDrawer";
 import Backdrop from "../../Shared/Components/Backdrop";
-const MainNavigation = (props) => {
+const MainNavigation = ({ User_Type, logout }) => {
   const [drawerIsOpen, setDrawerIsOpen] = useState(false);
 
   const openDrawerHandler = () => {
@@ -20,7 +20,7 @@ const MainNavigation = (props) => {
       {drawerIsOpen && <Backdrop onClick={closeDrawerHandler} />}
       <SideDrawer show={drawerIsOpen} onClick={closeDrawerHandler}>
         <nav className="main-navigation__drawer-nav">
-          <NavLinks />
+          <NavLinks User_Type={User_Type} logout={logout} />
         </nav>
       </SideDrawer>
       <MainHeader>
@@ -36,7 +36,7 @@ const MainNavigation = (props) => {
           <Link to="/"> Exams App</Link>
         </h1>
         <nav className="main-navigation__header-nav">
-          <NavLinks onLogout={props.onLogout} />
+          <NavLinks User_Type={User_Type} logout={logout} />
         </nav>
       </MainHeader>
     </React.Fragment>

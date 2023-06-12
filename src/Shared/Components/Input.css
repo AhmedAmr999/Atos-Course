@@ -1,65 +1,32 @@
 .form-control {
-  margin: 1rem 0;
-}
-
-.form-control label,
-.form-control input {
-  display: block;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
 }
 
 .form-control label {
+  display: flex;
+  align-items: center;
   font-weight: bold;
-  margin-bottom: 0.5rem;
 }
 
-.form-control input {
+.form-control input[type="text"],
+.form-control input[type="password"],
+.form-control input[type="number"] ,
+.form-control input[type="datetime-local"] {
   width: 100%;
-  font: inherit;
+  padding: 8px;
+  font-size: 16px;
   border: 1px solid #ccc;
-  background: #f8f8f8;
-  padding: 0.15rem 0.25rem;
+  border-radius: 4px;
 }
 
-.form-control input:focus {
-  outline: none;
-  background: #ebebeb;
-  border-color: #510077;
+.form-control input[type="radio"],
+.form-control input[type="checkbox"] {
+  margin-right: 5px;
 }
 
-.form-control--invalid label,
-.form-control--invalid p {
-  color: red;
-}
-
-.form-control--invalid input {
-  border-color: red;
-  background: #ffd1d1;
-}
-
-/* Checkbox styles */
-.form-control input[type="checkbox"],
-.form-control input[type="radio"] {
-  display: inline-block;
-  margin-right: 0.5rem;
-}
-
-/* Checkbox focus styles */
-.form-control input[type="checkbox"]:focus,
-.form-control input[type="radio"]:focus {
-  outline: none;
-  border-color: #510077;
-}
-
-/* Checkbox invalid styles */
-.form-control--invalid input[type="checkbox"]~label,
-.form-control--invalid input[type="radio"]~label {
-  color: red;
-  margin: 0;
-  padding: 0;
-}
-
-.form-control--invalid input[type="checkbox"]:checked,
-.form-control--invalid input[type="radio"]:checked {
-  border-color: red;
-  background: #ffd1d1;
+.form-control input[type="radio"]+label,
+.form-control input[type="checkbox"]+label {
+  font-weight: normal;
 }

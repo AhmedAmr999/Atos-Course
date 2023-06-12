@@ -12,7 +12,7 @@ const EditQuestionForm = (props) => {
     handleAnswersChange,
     handleSubmit,
     userId,
-    removeAnswer, 
+    removeAnswer,
   } = props;
 
   const [newAnswer, setNewAnswer] = useState("");
@@ -86,7 +86,7 @@ const EditQuestionForm = (props) => {
               {answer}
               <button
                 type="button"
-                onClick={() => removeAnswer(index)} // Call removeAnswer function
+                onClick={() => removeAnswer(index)} 
                 style={{ marginLeft: "10px" }}
                 className="remove-button"
               >

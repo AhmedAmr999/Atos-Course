@@ -83,7 +83,6 @@ export async function fetchSingleQuestion(questionId) {
   const responseData = await fetch(`${API_ENDPOINT}/${questionId}`);
   const jsonData = await responseData.json();
   if (jsonData.message === "Found Question Successfully") {
-    console.log(jsonData.question);
     return jsonData.question;
   } else {
     throw new Error("Could not find question");
