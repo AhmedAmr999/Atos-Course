@@ -4,7 +4,8 @@ import {
   fetchAnswers,
 } from "../../Shared/APIS/QuestionsAPI";
 import { useParams } from "react-router-dom/cjs/react-router-dom.min";
-
+import Card from "../../Shared/Components/Card";
+import "./StudentExam.css";
 const StudentExam = () => {
   const [examInstances, setExamInstances] = useState([]);
   const [examDefinitionName, setExamDefinitionName] = useState("");
@@ -375,82 +376,87 @@ const StudentExam = () => {
   return (
     <div>
       {!takeExam ? (
-        <button
-          style={{ alignItems: "center", marginTop: "10rem" }}
-          onClick={handleTakeExam}
-        >
-          Take Exam
-        </button>
+        <>
+          <Card className="container" style={{}}>
+            <h2>Start {examDefinitionName} </h2>
+            <button
+              style={{ alignItems: "center", marginTop: "10rem" }}
+              onClick={handleTakeExam}
+            >
+              Take Exam
+            </button>
+          </Card>
+        </>
       ) : (
         <>
-          <h2 style={{ marginTop: "10rem" }}>
-            Exam Definition Name: {examDefinitionName}
-          </h2>
-          <p>Total Exam Mark: {totalExamMark}</p>
-          <p>Exam Percentage: {examPercentage}%</p>
-          {handleSubmitButton && (
-            <h1>
-              You Finished the Exam Successfully With Percentage{" "}
-              {examPercentage}% and Score {totalStudentMark}/{totalExamMark}
-            </h1>
-          )}
-          <p>Current Page: {currentPage + 1}</p>
+          <div style={{ margin: "5rem" }}>
+            <p>Total Exam Mark: {totalExamMark}</p>
+            {handleSubmitButton && (
+              <h1>
+                You Finished the Exam Successfully With Percentage{" "}
+                {examPercentage}% and Score {totalStudentMark}/{totalExamMark}
+              </h1>
+            )}
+            {!finishedExam && <p>Current Page: {currentPage + 1}</p>}
 
-          {!finishedExam && (
-            <>
-              <p>
-                Countdown: {Math.floor(countdown / 60)}:{countdown % 60}
-              </p>
-              {timeIsUp && (
-                <p style={{ color: "red" }}>
-                  Time is up! You cannot choose an answer for this question.
+            {!finishedExam && (
+              <>
+                <p>
+                  Countdown: {Math.floor(countdown / 60)}:{countdown % 60}
                 </p>
-              )}
-              {currentQuestion && (
-                <div>
-                  <h3>{currentQuestion.questionName}</h3>
-                  <ol>
-                    {currentQuestion.answers.map((answer, index) => (
-                      <li key={index}>
-                        <input
-                          type={
-                            currentQuestion.answers.length === 2
-                              ? "radio"
-                              : "checkbox"
-                          }
-                          name={`question${index}`}
-                          value={answer}
-                          checked={selectedOptions.includes(answer)}
-                          onChange={(e) =>
-                            handleOptionChange(e, answer, currentQuestion)
-                          }
-                          disabled={timeIsUp} // Disable selected option if time is up
-                        />
-                        <label>{answer}</label>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              )}
-            </>
-          )}
+                {timeIsUp && (
+                  <p style={{ color: "red" }}>
+                    Time is up! You cannot choose an answer for this question.
+                  </p>
+                )}
+                {currentQuestion && (
+                  <div>
+                    <h3>{currentQuestion.questionName}</h3>
+                    <ol>
+                      {currentQuestion.answers.map((answer, index) => (
+                        <li key={index}>
+                          <input
+                            type={
+                              currentQuestion.answers.length === 2
+                                ? "radio"
+                                : "checkbox"
+                            }
+                            name={`question${index}`}
+                            value={answer}
+                            checked={selectedOptions.includes(answer)}
+                            onChange={(e) =>
+                              handleOptionChange(e, answer, currentQuestion)
+                            }
+                            disabled={timeIsUp}
+                          />
+                          <label>{answer}</label>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                )}
+              </>
+            )}
 
-          {finishedExam ? (
-            <>
-              <p>You finished the exam.</p>
-              <button onClick={handleSubmit}>Submit Exam</button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={handleNext}
-                disabled={selectedOptions.length === 0 && !timeIsUp}
-                style={{ display: showSubmitButton ? "none" : "block" }}
-              >
-                Next
-              </button>
-            </>
-          )}
+            {finishedExam ? (
+              <>
+                <p>You finished the exam.</p>
+                {!handleSubmitButton && (
+                  <button onClick={handleSubmit}>Submit Exam</button>
+                )}{" "}
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={handleNext}
+                  disabled={selectedOptions.length === 0 && !timeIsUp}
+                  style={{ display: showSubmitButton ? "none" : "block" }}
+                >
+                  Next
+                </button>
+              </>
+            )}
+          </div>
         </>
       )}
     </div>
