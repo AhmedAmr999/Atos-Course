@@ -36,7 +36,7 @@ function App() {
             {islogin && User_Type === "TEACHER" && <AddExamInstance />}
           </Route>
 
-          <Route path="/exams/student/:examdefinition_id/:examInsatnceId" exact>
+          <Route path="/exams/student/:examdefinition_id" exact>
             {islogin && User_Type === "STUDENT" && <StudentExam />}
           </Route>
 

@@ -42,7 +42,7 @@ const NavLinks = ({ User_Type, logout }) => {
 
         {User_Type === "STUDENT" && localStorage.getItem("token") !== null && (
           <li>
-            <NavLink to={`/exams/student/:examdefinition_id/:examInsatnceId`}>
+            <NavLink to={`/exams/student/:examdefinition_id`}>
               Student Questions
             </NavLink>
           </li>

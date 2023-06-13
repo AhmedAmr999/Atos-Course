@@ -27,8 +27,8 @@ const StudentExam = () => {
   const [updatedQuestions, setUpdatedQuestions] = useState([]);
 
   const userId = localStorage.getItem("userId");
-  const { examdefinition_id, examInsatnceId } = useParams();
-
+  const { examdefinition_id } = useParams();
+  const [examInsatnceId, setExamInsatnceId] = useState("");
   useEffect(() => {
     getUserExamInstances();
   }, []);
@@ -37,12 +37,13 @@ const StudentExam = () => {
     console.log(examInsatnceId);
     try {
       const response = await fetch(
-        `http://localhost:3122/exams/examIntsance/${userId}/generatedLinks/examInsatnceId/${examInsatnceId}/examDefinitionId/${examdefinition_id}`
+        `http://localhost:3122/exams/examIntsance/${userId}/generatedLinks/examDefinitionId/${examdefinition_id}`
       );
       if (response.ok) {
         const data = await response.json();
         setExamInstances(data.examInsatnceId[0].questions);
         setExamDefinitionName(data.examDefinitionName);
+        setExamInsatnceId(data.examInsatnceId[0].examinstance_id);
         setPassingScore(data.passing_score);
       } else {
         console.error("Failed to fetch exam instances:", response.status);
@@ -186,6 +187,7 @@ const StudentExam = () => {
           body: JSON.stringify({
             status: "taken",
             questions: updatedQuestions,
+            studentscore: parseInt(examPercentage),
             studentgrade: "Pass",
           }),
         }
@@ -390,7 +392,6 @@ const StudentExam = () => {
       ) : (
         <>
           <div style={{ margin: "5rem" }}>
-            <p>Total Exam Mark: {totalExamMark}</p>
             {handleSubmitButton && (
               <h1>
                 You Finished the Exam Successfully With Percentage{" "}
@@ -401,6 +402,7 @@ const StudentExam = () => {
 
             {!finishedExam && (
               <>
+                <p>student Mark :{totalStudentMark}</p>
                 <p>
                   Countdown: {Math.floor(countdown / 60)}:{countdown % 60}
                 </p>
