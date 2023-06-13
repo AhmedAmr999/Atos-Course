@@ -10,7 +10,7 @@ router.post("/addExamInsatnce", examInstanceController.addExamInstance);
 router.delete("/:dei", examInstanceController.deleteExamInstance);
 
 router.get(
-  "/:userId/generatedLinks/examInsatnceId/:examInsatnceId/examDefinitionId/:examdefId",
+  "/:userId/generatedLinks/examDefinitionId/:examdefId",
   examInstanceController.getUserExamIntsance
 );
 
