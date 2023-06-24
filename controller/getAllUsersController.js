@@ -64,5 +64,36 @@ const postAdmin = async (req, res, next) => {
   }
 };
 
-exports.postAdmin = postAdmin;
+const getAllTeachers = async (req, res, next) => {
+  try {
+    const access_token = await getAccessToken();
+    const users = await getUsersWithToken(access_token);
 
+    const studentUsers = users.filter((user) => {
+      const userTypes = user.attributes && user.attributes.User_Type;
+      return userTypes && userTypes.includes("TEACHER");
+    });
+
+    res.status(200).json({ teachers: studentUsers });
+  } catch (error) {
+    console.error("Failed to process request:", error);
+    res.status(500).json({ error: "Failed to process request" });
+  }
+};
+
+const getUserById = async (req, res, next) => {
+  const userId = req.params.userId;
+  try {
+    const access_token = await getAccessToken();
+    const users = await getUsersWithToken(access_token);
+    const filteredUsers = users.filter((user) => user.id === userId);
+    res.status(200).json({ user: filteredUsers });
+  } catch (error) {
+    console.error("Failed to process request:", error);
+    res.status(500).json({ error: "Failed to process request" });
+  }
+};
+
+exports.postAdmin = postAdmin;
+exports.getAllTeachers = getAllTeachers;
+exports.getUserById = getUserById;
