@@ -1,19 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { getAllExams } from "../../Shared/APIS/ExamsDefinitionAPI";
-import "bootstrap/dist/css/bootstrap.min.css";
 
+import { newGetAllUsers } from "../../Shared/APIS/AuthenticationAPI";
 import {
-  getAllUsers,
-  newGetAllUsers,
-} from "../../Shared/APIS/AuthenticationAPI";
-import {
-  getAllQuestions,
   fetchAnswers,
   fetchSingleQuestion,
 } from "../../Shared/APIS/QuestionsAPI";
 import { addExamInstance } from "../../Shared/APIS/ExamsInstanceAPI";
 import Input from "../../Shared/Components/Input";
-import "../../Users/Pages/auth.css";
+import "./addExamInstanceForm.css";
+import Card from "../../Shared/Components/Card";
 
 const AddExamInstanceForm = () => {
   const [loadedNewUsers, setLoadedNewUsers] = useState([]);
@@ -26,6 +22,7 @@ const AddExamInstanceForm = () => {
   );
   const [selectedUsersOption, setSelectedUsersOption] = useState("");
   const [loadedAnswers, setLoadedAnswers] = useState([]);
+
   const status = "absent";
   let selectedExam;
 
@@ -82,11 +79,11 @@ const AddExamInstanceForm = () => {
   };
 
   const handleExamDefinitionChange = async (event) => {
-    const selectedExamId = event.target.value;
+    const selectedExamId = parseInt(event.target.value);
     setSelectedExamDefinition(selectedExamId);
 
     selectedExam = loadedExams.find((exam) => {
-      return exam.examdefinition_id == selectedExamId;
+      return exam.examdefinition_id === selectedExamId;
     });
 
     if (selectedExam) {
@@ -97,7 +94,6 @@ const AddExamInstanceForm = () => {
       for (const questionId of questionsIds) {
         try {
           const response = await fetchSingleQuestion(questionId);
-          console.log(response.expectedTime);
           questionData.push({
             answerTime: "",
             questionId: response._id,
@@ -122,7 +118,6 @@ const AddExamInstanceForm = () => {
           );
         }
       }
-      console.log(questionData);
       setLoadedQuestions(questionData);
       setLoadedAnswers(answers);
     } else {
@@ -137,6 +132,10 @@ const AddExamInstanceForm = () => {
       return;
     }
 
+    if (new Date(endtime) <= new Date(startedTime)) {
+      alert("End Time should be greater than Start Time...");
+      return;
+    }
     if (!selectedExamDefinition) {
       alert("Please select an exam definition.");
       return;
@@ -146,14 +145,13 @@ const AddExamInstanceForm = () => {
       alert("User ID not found in local storage.");
       return;
     }
-    console.log("hthe loaded questiosn ", loadedQuestions);
     const baseURL = "http://localhost:3001/exams/student/";
     localStorage.getItem("token");
     const url = `${baseURL}${selectedExamDefinition}`;
 
     try {
       for (const userOption of selectedUsersOption) {
-        await addExamInstance(
+        const result = await addExamInstance(
           selectedExamDefinition,
           startedTime,
           endtime,
@@ -164,8 +162,13 @@ const AddExamInstanceForm = () => {
           url,
           localStorage.getItem("token")
         );
+        if (result === "Exam already assigned to this user") {
+          alert(result);
+        } else {
+          alert("Exam Instances added successfully");
+        }
       }
-      alert("Exam Instances added successfully");
+
       setStartedTime("");
       setEndTime("");
       setSelectedExamDefinition("");
@@ -176,70 +179,72 @@ const AddExamInstanceForm = () => {
     }
   };
   return (
-    <form onSubmit={handleSubmit} className="container mt-3 mb-3 ">
-      <h1 className="authentication form">Create Exam Instance</h1>
-      <h3>Taken By</h3>
-      <div>
-        {loadedNewUsers.map((user) => (
-          <div key={`user_${user.id}`} className="user-item">
-            <Input
-              element="checkbox"
-              id={user.id}
-              type="checkbox"
-              value={user.id}
-              label={user.username}
-              onChange={handleSelectUserChange}
-              checked={selectedUsersOption.includes(user.id)}
-            />
-          </div>
-        ))}
-      </div>
-      <h3>Add Exam Definition</h3>
-      <div>
-        {loadedExams.map((examdefinition) => (
-          <div className="user-item" key={examdefinition.examdefinition_id}>
-            <Input
-              element="radio"
-              id={examdefinition.examdefinition_id}
-              type="radio"
-              value={examdefinition.examdefinition_id}
-              onChange={handleExamDefinitionChange}
-              label={examdefinition.examdefinition_name}
-              checked={
-                selectedExamDefinition == examdefinition.examdefinition_id
-              }
-            />
-          </div>
-        ))}
-      </div>
-      <div>
-        <Input
-          element="datetime-local"
-          type="datetime-local"
-          name="startedTime"
-          id="startedTime"
-          label="Started Time"
-          onChange={handleStartedTimeChange}
-          value={startedTime}
-          required
-        />
-      </div>
-      <div>
-        <Input
-          element="datetime-local"
-          type="datetime-local"
-          name="endtime"
-          id="endtime"
-          label="endtime"
-          onChange={handleEndTimeChange}
-          value={endtime}
-          required
-        />
-      </div>
-      <button type="submit" className="login-button">
-        Submit
-      </button>
-    </form>
+    <Card className="add-exam-instance-card">
+      <form onSubmit={handleSubmit} className="add-exam-instance-form">
+        <h1 className="authentication-form">Create Exam Instance</h1>
+        <div className="form-group">
+          <h3>Taken By</h3>
+          {loadedNewUsers.map((user) => (
+            <div key={`user_${user.id}`} className="user-item">
+              <Input
+                element="checkbox"
+                id={user.id}
+                type="checkbox"
+                value={user.id}
+                label={user.username}
+                onChange={handleSelectUserChange}
+                checked={selectedUsersOption.includes(user.id)}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="form-group">
+          <h3>Add Exam Definition</h3>
+          {loadedExams.map((examdefinition) => (
+            <div className="user-item" key={examdefinition.examdefinition_id}>
+              <Input
+                element="radio"
+                id={examdefinition.examdefinition_id}
+                type="radio"
+                value={examdefinition.examdefinition_id}
+                onChange={handleExamDefinitionChange}
+                label={examdefinition.examdefinition_name}
+                checked={
+                  selectedExamDefinition === examdefinition.examdefinition_id
+                }
+              />
+            </div>
+          ))}
+        </div>
+        <div className="form-group">
+          <Input
+            element="datetime-local"
+            type="datetime-local"
+            name="startedTime"
+            id="startedTime"
+            label="Started Time"
+            onChange={handleStartedTimeChange}
+            value={startedTime}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <Input
+            element="datetime-local"
+            type="datetime-local"
+            name="endtime"
+            id="endtime"
+            label="End Time"
+            onChange={handleEndTimeChange}
+            value={endtime}
+            required
+          />
+        </div>
+        <button type="submit" className="submit-button">
+          Submit
+        </button>
+      </form>
+    </Card>
   );
 };
 export default AddExamInstanceForm;

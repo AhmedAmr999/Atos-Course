@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Card from "../../Shared/Components/Card";
-import "./QuestionItem.css";
+// import "./QuestionItem.css";
 import { NavLink } from "react-router-dom";
 import {
   fetchAnswers,
   deleteQuestionAndAnswers,
 } from "../../Shared/APIS/QuestionsAPI";
+import "../../Exams/Pages/AllExamInstances.css";
 
 const QuestionItem = (props) => {
   const [selectedOption, setSelectedOption] = useState(null);
@@ -38,39 +39,34 @@ const QuestionItem = (props) => {
   };
 
   return (
-    <div>
-      <li className="question-item">
-        <Card className="question-item__content ">
-          <div className="top-right">
-            <p>{props.mark}</p>
-          </div>
-          <h1>{props.questionName}</h1>
-          {isCurrentUserCreator && (
-            <NavLink to={`/${props.id}/editQuestion`}>Edit Question</NavLink>
-          )}
-          {localStorage.getItem("userType") === "ADMIN" && (
-            <button type="button" onClick={handleDeleteQuestion}>
-              Delete Question
-            </button>
-          )}
-          {loadedAnswers.length > 0 &&
-            loadedAnswers.map((answer, index) => (
-              <React.Fragment key={`answer_${index}`}>
-                <ol key={`answer_${index}`} className="answer-item">
-                  <input
-                    id={index}
-                    type="radio"
-                    value={answer}
-                    onChange={handleOptionChange}
-                    checked={selectedOption === index}
-                  />
-                  <label htmlFor={index}>{answer}</label>
-                </ol>
-              </React.Fragment>
-            ))}
-        </Card>
-      </li>
-    </div>
+    <Card className="card">
+      <h1 className="exam-name">{props.questionName}</h1>
+      {isCurrentUserCreator && (
+        <NavLink to={`/${props.id}/editQuestion`} className="view-link">
+          Edit Question
+        </NavLink>
+      )}
+      {localStorage.getItem("userType") === "ADMIN" && (
+        <button type="button" onClick={handleDeleteQuestion}>
+          Delete Question
+        </button>
+      )}
+      {loadedAnswers.length > 0 &&
+        loadedAnswers.map((answer, index) => (
+          <React.Fragment key={`answer_${index}`}>
+            <ol key={`answer_${index}`} className="answer-item">
+              <input
+                id={index}
+                type="radio"
+                value={answer}
+                onChange={handleOptionChange}
+                checked={selectedOption === index}
+              />
+              <label htmlFor={index}>{answer}</label>
+            </ol>
+          </React.Fragment>
+        ))}
+    </Card>
   );
 };
 

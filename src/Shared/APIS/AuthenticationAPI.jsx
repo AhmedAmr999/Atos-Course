@@ -1,6 +1,6 @@
 const API_ENDPOINT = "http://localhost:3002/users";
 
-const GET_ALL_USERS_API = "http://localhost:8000/api/users";
+const GET_ALL_USERS_API = "http://localhost:8000/api";
 
 export async function login(username, password) {
   const response = await fetch(`${API_ENDPOINT}/login`, {
@@ -77,7 +77,39 @@ export async function getAllUsers() {
 
 export async function newGetAllUsers() {
   try {
-    const response = await fetch(`${GET_ALL_USERS_API}`, {
+    const response = await fetch(`${GET_ALL_USERS_API}/users`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function newGetTeachers() {
+  try {
+    const response = await fetch(`${GET_ALL_USERS_API}/teachers`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function newGetUserInfo(userId) {
+  try {
+    const response = await fetch(`${GET_ALL_USERS_API}/users/${userId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

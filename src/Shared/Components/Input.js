@@ -20,6 +20,7 @@ const Input = (props) => {
           name={props.name}
           required={props.required}
           minLength={props.minLength}
+          disabled={props.disabled}
         />
       </React.Fragment>
     );

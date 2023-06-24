@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { addExam } from "../../Shared/APIS/ExamsDefinitionAPI";
 import { getAllQuestions } from "../../Shared/APIS/QuestionsAPI";
 import Input from "../../Shared/Components/Input";
-import "../../Users/Pages/auth.css";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import "./addExamForm.css";
+
 const AddExamPage = () => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [loadedQuestions, setLoadedQuestions] = useState([]);
@@ -64,8 +65,8 @@ const AddExamPage = () => {
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
+    <div className="add-exam-container">
+      <form className="add-exam-form" onSubmit={handleSubmit}>
         <h2>Please Add Exam</h2>
         <Input
           type="number"
@@ -108,7 +109,7 @@ const AddExamPage = () => {
               </ol>
             </React.Fragment>
           ))}
-        <button type="submit" className="login-button">
+        <button type="submit" className="submit-button">
           Submit
         </button>
       </form>

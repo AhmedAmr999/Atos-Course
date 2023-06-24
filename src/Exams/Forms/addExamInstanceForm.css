@@ -1,0 +1,73 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.add-exam-instance-card {
+    width: 600px;
+    padding: 2rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+.add-exam-instance-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.add-exam-instance-form h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.add-exam-instance-form h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.add-exam-instance-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.add-exam-instance-form .form-group label {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 0.5rem;
+}
+
+.add-exam-instance-form .form-group input[type="datetime-local"],
+.add-exam-instance-form .form-group input[type="checkbox"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.add-exam-instance-form .form-group input[type="checkbox"] {
+    width: auto;
+    margin-top: 5px;
+}
+
+.add-exam-instance-form .submit-button {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.add-exam-instance-form .submit-button:hover {
+    background-color: #45a049;
+}

@@ -1,5 +1,7 @@
 .combobox {
-    margin-top: 4rem;
+    margin-top: 20rem;
+    margin-bottom: 2rem;
+    /* Add space between ComboBoxes and NavLink */
     display: inline-block;
     position: relative;
 }

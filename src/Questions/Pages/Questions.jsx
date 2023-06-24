@@ -4,8 +4,12 @@ import ReactPaginate from "react-paginate";
 import "./pagination.css";
 import ComboBox from "../../Shared/Components/ComboBox";
 import { getAllQuestions } from "../../Shared/APIS/QuestionsAPI";
-import { getAllUsers } from "../../Shared/APIS/AuthenticationAPI";
+import {
+  getAllUsers,
+  newGetTeachers,
+} from "../../Shared/APIS/AuthenticationAPI";
 import LoadingSpinner from "../../Shared/Components/LoadingSpinner";
+import { NavLink } from "react-router-dom/cjs/react-router-dom.min";
 
 const Questions = () => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -39,8 +43,12 @@ const Questions = () => {
 
   const getUsers = async () => {
     try {
-      const data = await getAllUsers();
-      setLoadedUsers(data.users);
+      const data = await newGetTeachers();
+      const users = data.teachers.map((user) => ({
+        id: user.id,
+        username: user.username,
+      }));
+      setLoadedUsers(users);
     } catch (error) {
       console.error("Failed to fetch users:", error);
     }
@@ -63,9 +71,9 @@ const Questions = () => {
     );
     if (selectedUser) {
       const filteredQuestions = loadedQuestions.filter(
-        (question) => question.creatorId === selectedUser._id
+        (question) => question.creatorId === selectedUser.id
       );
-      setSelectedUsersOption(selectedUser._id);
+      setSelectedUsersOption(selectedUser.id);
       setLoadedQuestions(filteredQuestions);
     }
   };
@@ -84,18 +92,33 @@ const Questions = () => {
     offset + questionsPerPage
   );
 
-  const filteredUsers = loadedUsers
-    .filter((user) => user.userType === "TEACHER")
-    .map((user) => user.username);
-
   if (isLoading) {
     return <LoadingSpinner />;
   }
 
   return (
     <div>
+      <NavLink to="/questions/addQuestion">Add Question</NavLink>
       <React.Fragment>
+        {loadedQuestions.length !== 0 && Array.isArray(loadedUsers) && (
+          <ComboBox
+            options={loadedUsers.map((user) => user.username)}
+            selectedOption={selectedUsersOption}
+            onChange={handleUserChange}
+            comboBoxName="Select a teacher"
+          />
+        )}
+
+        {loadedQuestions.length !== 0 && (
+          <ComboBox
+            options={allCategories}
+            selectedOption={selectedOption}
+            onChange={handleSelectChange}
+            comboBoxName="Select a category"
+          />
+        )}
         <QuestionList questions={currentQuestions} />
+
         {loadedQuestions.length !== 0 && (
           <ReactPaginate
             pageCount={Math.ceil(filteredData.length / questionsPerPage)}
@@ -106,22 +129,6 @@ const Questions = () => {
             activeClassName="active"
             previousLabel="Previous"
             nextLabel="Next"
-          />
-        )}
-        {loadedQuestions.length !== 0 && (
-          <ComboBox
-            options={allCategories}
-            selectedOption={selectedOption}
-            onChange={handleSelectChange}
-            comboBoxName="Select a category"
-          />
-        )}
-        {loadedQuestions.length !== 0 && (
-          <ComboBox
-            options={filteredUsers}
-            selectedOption={selectedUsersOption}
-            onChange={handleUserChange}
-            comboBoxName="Select a teacher"
           />
         )}
       </React.Fragment>

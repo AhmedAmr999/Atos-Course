@@ -3,6 +3,7 @@ import {
   fetchSingleQuestion,
   fetchAnswers,
 } from "../../Shared/APIS/QuestionsAPI";
+import { getUserExamInstances } from "../../Shared/APIS/ExamsInstanceAPI";
 import { useParams } from "react-router-dom/cjs/react-router-dom.min";
 import Card from "../../Shared/Components/Card";
 import "./StudentExam.css";
@@ -26,31 +27,47 @@ const StudentExam = () => {
   const [takeExam, setTakeExam] = useState(false);
   const [updatedQuestions, setUpdatedQuestions] = useState([]);
 
+  const [examTimeIsUp, setExamTimeIsUp] = useState(false);
+  const [endTime, setEndTime] = useState();
+
   const userId = localStorage.getItem("userId");
   const { examdefinition_id } = useParams();
   const [examInsatnceId, setExamInsatnceId] = useState("");
+  const [showTakeExamButton, setShowTakeExamButton] = useState(false);
+  const [isPass, setIsPass] = useState("");
+
   useEffect(() => {
-    getUserExamInstances();
+    fetchData();
   }, []);
 
-  const getUserExamInstances = async () => {
-    console.log(examInsatnceId);
+  const fetchData = async () => {
     try {
-      const response = await fetch(
-        `http://localhost:3122/exams/examIntsance/${userId}/generatedLinks/examDefinitionId/${examdefinition_id}`
+      const data = await getUserExamInstances(userId, examdefinition_id);
+      setExamInstances(data.examInsatnceId[0].questions);
+      setExamDefinitionName(data.examDefinitionName);
+      setExamInsatnceId(data.examInsatnceId[0].examinstance_id);
+      setPassingScore(data.passing_score);
+      setShowTakeExamButton(
+        checkStartedTime(data.examInsatnceId[0].startedtime)
       );
-      if (response.ok) {
-        const data = await response.json();
-        setExamInstances(data.examInsatnceId[0].questions);
-        setExamDefinitionName(data.examDefinitionName);
-        setExamInsatnceId(data.examInsatnceId[0].examinstance_id);
-        setPassingScore(data.passing_score);
-      } else {
-        console.error("Failed to fetch exam instances:", response.status);
-      }
+      setEndTime(data.examInsatnceId[0].endtime);
     } catch (error) {
-      console.error("Failed to fetch exam instances:", error);
+      console.error("Failed to fetch exam instances:", error.message);
     }
+  };
+
+  const checkStartedTime = (startedTime) => {
+    const startedTimeObj = new Date(startedTime);
+    const currentDate = new Date();
+    startedTimeObj.setSeconds(0, 0);
+    currentDate.setSeconds(0, 0);
+
+    const startedHours = startedTimeObj.getHours();
+    const startedMinutes = startedTimeObj.getMinutes();
+    const currentHours = currentDate.getHours();
+    const currentMinutes = currentDate.getMinutes();
+
+    return startedHours === currentHours && startedMinutes === currentMinutes;
   };
 
   const convertDisplayTimeToSeconds = (displayTime) => {
@@ -127,97 +144,84 @@ const StudentExam = () => {
     const updatedQuestionsCopy = [...updatedQuestions];
     updatedQuestionsCopy[currentPage] = updatedQuestion;
     setUpdatedQuestions(updatedQuestionsCopy);
-
-    console.log(updatedQuestion.answerTime);
   };
 
   const handleSubmit = async () => {
-    console.log("the Updated Question ", updatedQuestions);
     const percentage = Math.floor((totalStudentMark / totalExamMark) * 100);
     setHandleSubmitButton(true);
     setExamPercentage(percentage);
-    console.log(currentQuestions);
     const questionArray = Array.isArray(currentQuestions)
       ? currentQuestions
       : [];
-    console.log(updatedQuestions);
-    console.log(examInsatnceId);
-    try {
-      const response = await fetch(
-        `http://localhost:3122/exams/examIntsance/${userId}/updateExamInstance/${examInsatnceId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            status: "taken",
-            questions: updatedQuestions,
-          }),
-        }
-      );
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-        if (data.message === "Exam instance updated successfully") {
-          // Exam instance updated successfully
-          setTakeExam(true);
-        } else {
-          console.error("Failed to update exam instance:", data.error);
+    const updateExamInstance = async (status, studentGrade, completiontime) => {
+      try {
+        const response = await fetch(
+          `http://localhost:3122/exams/examIntsance/${userId}/updateExamInstance/${examInsatnceId}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              status,
+              questions: updatedQuestions,
+              studentscore: parseInt(examPercentage),
+              studentgrade: studentGrade,
+              completiontime,
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          console.error("Failed to update exam instance:", response.status);
         }
-      } else {
-        console.error("Failed to update exam instance:", response.status);
+      } catch (error) {
+        console.error("Failed to update exam instance:", error);
       }
-    } catch (error) {
-      console.error("Failed to update exam instance:", error);
-    }
+    };
 
     if (parseInt(examPercentage) >= passingScore) {
       setFinishedExam(true);
       alert("You Passed the Exam Successfully");
-      console.log("the updated quetsions in response  ", updatedQuestions);
-      const response = await fetch(
-        `http://localhost:3122/exams/examIntsance/${userId}/updateExamInstance/${examInsatnceId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            status: "taken",
-            questions: updatedQuestions,
-            studentscore: parseInt(examPercentage),
-            studentgrade: "Pass",
-          }),
-        }
-      );
-      console.log("the rsponse is ", response);
-      if (!response.ok) {
-        console.error("Failed to update student grade:", response.status);
-      }
+      const currentTime = new Date();
+      const currentTimeString = currentTime.toISOString();
+
+      console.log(currentTimeString); // Output: 2023-06-22T12:25:00.000Z
+      await updateExamInstance("taken", "Pass", currentTimeString);
+      setIsPass("You Passed Successfully...");
     } else {
       setFinishedExam(true);
       alert("You Failed The Exam");
-      const response = await fetch(
-        `http://localhost:3122/exams/examIntsance/${userId}/updateExamInstance/${examInsatnceId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            status: "taken",
-            questions: updatedQuestions,
-            studentscore: parseInt(examPercentage),
-            studentgrade: "Fail",
-          }),
-        }
-      );
-      if (!response.ok) {
-        console.error("Failed to update student grade:", response.status);
-      }
+      const currentTime = new Date();
+      const currentTimeString = currentTime.toISOString();
+
+      console.log(currentTimeString); // Output: 2023-06-22T12:25:00.000Z
+      await updateExamInstance("taken", "Fail", currentTimeString);
+      setIsPass("You Failed Better Luck In Next Exam...");
     }
+    const fetchNotifications = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3456/notifications/getUser/${userId}/examInstance/${examInsatnceId}`,
+          {
+            method: "GET",
+          }
+        );
+
+        if (!response.ok) {
+          console.error("Failed to fetch notifications:", response.status);
+        } else {
+          const data = await response.json();
+          console.log("Fetched notifications:", data);
+          // Process the fetched notifications as needed
+        }
+      } catch (error) {
+        console.error("Failed to fetch notifications:", error);
+      }
+    };
+
+    await fetchNotifications();
   };
 
   useEffect(() => {
@@ -374,29 +378,65 @@ const StudentExam = () => {
   const handleTakeExam = async () => {
     setTakeExam(true);
   };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const currentTime = new Date();
+      const currentTimeString = currentTime.toISOString();
+      if (currentTimeString >= endTime) {
+        setFinishedExam(true);
+        setShowSubmitButton(true);
+        setExamTimeIsUp(true);
+        clearInterval(interval);
+      }
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <div>
       {!takeExam ? (
-        <>
-          <Card className="container" style={{}}>
-            <h2>Start {examDefinitionName} </h2>
-            <button
-              style={{ alignItems: "center", marginTop: "10rem" }}
-              onClick={handleTakeExam}
-            >
-              Take Exam
-            </button>
+        showTakeExamButton ? (
+          <>
+            <Card className="container" style={{}}>
+              <h2>Start {examDefinitionName}</h2>
+              <button
+                style={{ alignItems: "center", marginTop: "10rem" }}
+                onClick={handleTakeExam}
+              >
+                Take Exam
+              </button>
+            </Card>
+          </>
+        ) : (
+          <Card className="container">
+            <h4 style={{ color: "red", alignItems: "center" }}>
+              This is not the right time of the exam please Re-check the right
+              time of the exam...
+            </h4>
           </Card>
-        </>
+        )
       ) : (
         <>
           <div style={{ margin: "5rem" }}>
             {handleSubmitButton && (
-              <h1>
-                You Finished the Exam Successfully With Percentage{" "}
-                {examPercentage}% and Score {totalStudentMark}/{totalExamMark}
-              </h1>
+              <>
+                <div className="flip-card">
+                  <div className="flip-card-inner">
+                    <div className="flip-card-front">
+                      Show Result {examPercentage}%
+                    </div>
+                    <div className="flip-card-back">
+                      <h1>
+                        Score {totalStudentMark}/{totalExamMark}
+                      </h1>
+                      <p>{isPass}</p>
+                    </div>
+                  </div>
+                </div>
+              </>
             )}
             {!finishedExam && <p>Current Page: {currentPage + 1}</p>}
 

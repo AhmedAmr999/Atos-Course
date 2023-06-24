@@ -1,7 +1,13 @@
 const API_ENDPOINT = "http://localhost:3000/questions";
 
 export async function getAllQuestions() {
-  const responseData = await fetch(`${API_ENDPOINT}`);
+  const responseData = await fetch(`${API_ENDPOINT}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
   const jsonData = await responseData.json();
   return jsonData.questions;
 }
@@ -33,13 +39,14 @@ export async function addQuestion(questionInfo, answers, correctAnswers) {
       }),
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
 
     const data = await response.json();
 
     if (data.message === "success") {
-      window.location.href = "/users/profileInfo";
+      window.location.href = "/users/userProfile";
       alert("Question Added Successfully");
     } else {
       window.location.href = "/";
@@ -69,6 +76,7 @@ export const updateQuestion = async (
     }),
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   });
   const jsonData = await response.json();
@@ -97,7 +105,6 @@ export async function deleteSingleAnswer(answerId) {
         "Content-Type": "application/json",
       },
     });
-    console.log("the respone from the API is ", response);
     if (response.ok) {
       const data = await response.json();
       return data.message === "Answer deleted successfully";
@@ -114,7 +121,6 @@ export async function fetchSingleAnswer(answerId) {
   const responseData = await fetch(`${API_ENDPOINT}/Answer/${answerId}`);
   const jsonData = await responseData.json();
   if (jsonData.message === "Found answer Successfully") {
-    console.log("Found answer Successfully", jsonData.answer);
     return jsonData.answer;
   } else {
     throw new Error("Could not find question");

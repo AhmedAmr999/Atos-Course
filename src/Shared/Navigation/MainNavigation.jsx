@@ -33,7 +33,7 @@ const MainNavigation = ({ User_Type, logout }) => {
           <span />
         </button>
         <h1 className="main-navigation__title">
-          <Link to="/"> Exams App</Link>
+          <Link to="/users/userProfile"> Exams App</Link>
         </h1>
         <nav className="main-navigation__header-nav">
           <NavLinks User_Type={User_Type} logout={logout} />
