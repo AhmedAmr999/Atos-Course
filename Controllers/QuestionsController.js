@@ -34,6 +34,10 @@ const getAllQuestions = async (req, res, next) => {
       422
     );
   }
+  const User_Type = req.user.User_Type;
+  if (User_Type !== "TEACHER") {
+    return res.status(403).json({ message: "Access denied" });
+  }
   let questions;
   try {
     questions = await Question.find();
@@ -56,6 +60,11 @@ const addQuestion = async (req, res, next) => {
       new HttpError("Invalid Inputs passed,please check your data"),
       422
     );
+  }
+  const User_Type = req.user.User_Type;
+
+  if (User_Type !== "TEACHER") {
+    return res.status(403).json({ message: "Access denied" });
   }
   const {
     questionName,
@@ -146,6 +155,12 @@ const deleteQuestion = async (req, res, next) => {
       422
     );
   }
+
+  const User_Type = req.user.User_Type;
+
+  if (User_Type !== "ADMIN") {
+    return res.status(403).json({ message: "Access denied" });
+  }
   const questionId = req.params.qid;
   let question;
   try {
@@ -216,6 +231,12 @@ const updateQuestion = async (req, res, next) => {
     );
   }
 
+  const User_Type = req.user.User_Type;
+
+  if (User_Type !== "TEACHER") {
+    return res.status(403).json({ message: "Access denied" });
+  }
+
   const {
     questionName,
     category,
@@ -232,6 +253,9 @@ const updateQuestion = async (req, res, next) => {
     const question = await Question.findById(questionId);
     if (!question) {
       return next(new HttpError("Question not found.", 404));
+    }
+    if (question.creatorId !== req.user.id) {
+      return res.status(403).json({ message: "Access denied" });
     }
 
     question.questionName = questionName;
@@ -262,8 +286,6 @@ const updateQuestion = async (req, res, next) => {
     );
   }
 };
-
-
 
 const getSingleAnswer = async (req, res, next) => {
   const errors = validationResult(req);

@@ -8,19 +8,20 @@ const app = express();
 app.use(bodyParser.json());
 app.use("/questions", cors());
 app.use("/questions", questionsRouter);
+require("dotenv").config();
+
 
 mongoose
-  .connect(
-    "mongodb+srv://ahmedamr:ahmed1234@questionsandanswers.vk7h8jw.mongodb.net/?retryWrites=true&w=majority",
-    {
-      useNewUrlParser: true,
-    }
-  )
+  .connect(process.env.MONGO_QUESTIONS_DB_CONNECTION, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => {
+    // Start the server
     app.listen(3000, () => {
       console.log("Server Started on port 3000");
     });
   })
   .catch((err) => {
-    console.log(err);
+    console.error(err);
   });
