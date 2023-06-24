@@ -1,0 +1,24 @@
+{
+  "name": "notificationengineservice",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:producer": "node ./producer/index.js",
+    "start:consumer": "node ./consumer/index.js",
+    "start": "concurrently \"npm run start:producer\" \"npm run start:consumer\" \"nodemon app.js\""
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "concurrently": "^8.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.1.4",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
+    "mongoose": "^7.3.0",
+    "node-rdkafka": "^2.16.1"
+  }
+}
