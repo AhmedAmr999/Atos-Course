@@ -1,0 +1,27 @@
+
+.question-item {
+    margin: 3rem 0;
+}
+
+.question-item__content {
+    padding: 0;
+    margin-top: 5rem;
+}
+
+.answer-item {
+    margin: 1rem 0;
+}
+
+.icon-item {
+    margin-left: 1rem ;
+}
+
+.top-right {
+    position: absolute;
+    right: -90;
+}
+
+.center-warning{
+    margin:3rem;
+    align-items: center;
+}

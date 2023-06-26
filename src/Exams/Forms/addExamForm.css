@@ -1,0 +1,72 @@
+.add-exam-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 12rem;
+}
+
+.add-exam-form {
+    width: 500px;
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow-y: auto;
+    background-color: #fff;
+    /* Add a background color to ensure visibility */
+}
+
+.add-exam-form h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.add-exam-form h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.add-exam-form .submit-button {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.add-exam-form .submit-button:hover {
+    background-color: #45a049;
+}
+
+.add-exam-form input[type="number"],
+.add-exam-form input[type="text"],
+.add-exam-form input[type="checkbox"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.add-exam-form input[type="checkbox"] {
+    width: auto;
+    margin-top: 5px;
+}
+
+.add-exam-form ol {
+    padding-left: 20px;
+    margin-bottom: 10px;
+}
+
+.navlink-label {
+    display: inline-block;
+    /* Ensure the label appears on the same line as the NavLink */
+    margin-right: 10px;
+    /* Adjust the margin as needed */
+}

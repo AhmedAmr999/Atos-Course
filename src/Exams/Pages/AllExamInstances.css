@@ -1,0 +1,76 @@
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin-top: 2rem;
+    /* Space from the top */
+}
+
+.card {
+    width: 300px;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-right: 2rem;
+    /* Space between cards */
+    margin-bottom: 2rem;
+}
+
+.card:last-child {
+    margin-right: 0;
+    /* Remove margin for the last card in a row */
+}
+
+.exam-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.started-time {
+    color: gray;
+}
+
+.title {
+    margin-top: 1rem;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.view-link {
+    text-decoration: underline;
+    color: blue;
+}
+
+.question-item {
+    width: calc(50% - 1rem);
+    margin-right: 2rem;
+    margin-bottom: 2rem;
+}
+
+.question-item:last-child {
+    margin-right: 0;
+}
+
+.question-item__content {
+    padding: 0;
+    margin-top: 5rem;
+}
+
+.answer-item {
+    margin: 1rem 0;
+}
+
+.icon-item {
+    margin-left: 1rem;
+}
+
+.top-right {
+    position: absolute;
+    right: -90;
+}
+
+.center-warning {
+    margin: 3rem;
+    align-items: center;
+}
