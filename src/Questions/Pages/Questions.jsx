@@ -86,11 +86,9 @@ const Questions = () => {
     return categoryMatch && userMatch;
   });
 
-  const offset = currentPage * questionsPerPage;
-  const currentQuestions = filteredData.slice(
-    offset,
-    offset + questionsPerPage
-  );
+  const startIndex = currentPage * questionsPerPage;
+  const endIndex = startIndex + questionsPerPage;
+  const currentQuestions = filteredData.slice(startIndex, endIndex);
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -122,7 +120,7 @@ const Questions = () => {
         {loadedQuestions.length !== 0 && (
           <ReactPaginate
             pageCount={Math.ceil(filteredData.length / questionsPerPage)}
-            pageRangeDisplayed={5}
+            pageRangeDisplayed={3}
             marginPagesDisplayed={2}
             onPageChange={handlePageChange}
             containerClassName="pagination"

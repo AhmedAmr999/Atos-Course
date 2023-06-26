@@ -1,16 +1,23 @@
 const API_ENDPOINT = "http://localhost:3000/questions";
 
-export async function getAllQuestions() {
-  const responseData = await fetch(`${API_ENDPOINT}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
+export async function getAllQuestions(page = 1) {
+  const perPage = 3;
+
+  const responseData = await fetch(
+    `${API_ENDPOINT}?page=${page}&perPage=${perPage}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }
+  );
+
   const jsonData = await responseData.json();
   return jsonData.questions;
 }
+
 
 export async function fetchAnswers(questionId) {
   const responseData = await fetch(`${API_ENDPOINT}/${questionId}/Answers`);
