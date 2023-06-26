@@ -26,21 +26,20 @@ const saveAnswers = async (questionId, answers, correctAnswer) => {
 };
 
 const getAllQuestions = async (req, res, next) => {
-
   const User_Type = req.user.User_Type;
   if (User_Type !== "TEACHER") {
     return res.status(403).json({ message: "Access denied" });
   }
 
-  const page = req.query.page || 1; 
-  const perPage = 3;
+  const page = req.query.page || 1;
+  const perPage = req.query.queryPage ? parseInt(req.query.queryPage, 10) : 0;
 
   let totalQuestions;
   let questions;
   try {
     totalQuestions = await Question.countDocuments();
     questions = await Question.find()
-      .skip((page - 1) * perPage) 
+      .skip((page - 1) * perPage)
       .limit(perPage);
   } catch (error) {
     console.log(error);

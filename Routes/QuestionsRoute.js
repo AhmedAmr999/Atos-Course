@@ -4,7 +4,7 @@ const { check } = require("express-validator");
 const authMiddleWare = require("../middleWare/checkAuth");
 const router = express.Router();
 
-router.get("/", authMiddleWare, questionController.getAllQuestions);
+router.get(`/`, authMiddleWare, questionController.getAllQuestions);
 
 router.post(
   "/addQuestion",
