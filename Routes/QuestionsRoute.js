@@ -1,14 +1,14 @@
 const express = require("express");
 const questionController = require("../Controllers/QuestionsController");
 const { check } = require("express-validator");
-
+const authMiddleWare = require("../middleWare/checkAuth");
 const router = express.Router();
 
-router.get("/", questionController.getAllQuestions);
-
+router.get("/", authMiddleWare, questionController.getAllQuestions);
 
 router.post(
   "/addQuestion",
+  authMiddleWare,
   [
     check("questionName").not().isEmpty(),
     check("category").not().isEmpty(),
@@ -24,13 +24,18 @@ router.post(
 
 router.get("/:qid/Answers", questionController.getAnswersOfQuestion);
 
-router.delete("/deleteQuestion/:qid", questionController.deleteQuestion);
+router.delete(
+  "/deleteQuestion/:qid",
+  authMiddleWare,
+  questionController.deleteQuestion
+);
 
 router.get("/:qid", questionController.getSingleQuestion);
 router.get("/Answer/:aid", questionController.getSingleAnswer);
 
 router.patch(
   "/updateQuestion/:qid",
+  authMiddleWare,
   [
     check("questionName").not().isEmpty(),
     check("category").not().isEmpty(),

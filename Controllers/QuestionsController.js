@@ -26,29 +26,33 @@ const saveAnswers = async (questionId, answers, correctAnswer) => {
 };
 
 const getAllQuestions = async (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    console.log(errors);
-    return next(
-      new HttpError("Invalid Inputs passed,please check your data"),
-      422
-    );
-  }
+
   const User_Type = req.user.User_Type;
   if (User_Type !== "TEACHER") {
     return res.status(403).json({ message: "Access denied" });
   }
+
+  const page = req.query.page || 1; 
+  const perPage = 3;
+
+  let totalQuestions;
   let questions;
   try {
-    questions = await Question.find();
+    totalQuestions = await Question.countDocuments();
+    questions = await Question.find()
+      .skip((page - 1) * perPage) 
+      .limit(perPage);
   } catch (error) {
     console.log(error);
     return next(
-      new HttpError("fetching questions failed please try again later ", 500)
+      new HttpError("Fetching questions failed, please try again later", 500)
     );
   }
+
   res.json({
     questions,
+    currentPage: page,
+    totalPages: Math.ceil(totalQuestions / perPage),
   });
 };
 
@@ -63,7 +67,7 @@ const addQuestion = async (req, res, next) => {
   }
   const User_Type = req.user.User_Type;
 
-  if (User_Type !== "TEACHER") {
+  if (User_Type === "STUDENT") {
     return res.status(403).json({ message: "Access denied" });
   }
   const {
@@ -76,6 +80,21 @@ const addQuestion = async (req, res, next) => {
     answers,
     creatorId,
   } = req.body;
+
+  if (!Array.isArray(answers) || answers.length < 2) {
+    return next(
+      new HttpError("At least 2 answers are required to add a question", 422)
+    );
+  }
+
+  if (!Array.isArray(correctAnswers) || correctAnswers.length < 1) {
+    return next(
+      new HttpError(
+        "At least 1 correct answer is required to add a question",
+        422
+      )
+    );
+  }
 
   let existingQuestion;
   try {
